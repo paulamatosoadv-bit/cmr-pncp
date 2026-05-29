@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMR Advogados · Consulta PNCP</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0a1628;--gold:#c9a84c;--gold-light:#e0c070;--gold-dim:#8a6a28;--white:#f5f2eb;--text-muted:#8a9ab8;--border:rgba(201,168,76,.2);--border-strong:rgba(201,168,76,.5);--card-bg:rgba(18,32,64,.7);--red:#e05555;--green:#4caf7a;--yellow:#e0b84c}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--navy);color:var(--white);font-family:'Jost',sans-serif;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(201,168,76,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(26,48,96,.8) 0%,transparent 50%);pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px 60px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:32px 0 28px;border-bottom:1px solid var(--border);margin-bottom:40px}
+  .logo{display:flex;align-items:center;gap:16px}
+  .mono{width:48px;height:48px;background:linear-gradient(135deg,var(--gold),var(--gold-dim));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy);border-radius:2px}
+  .logo-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600}
+  .logo-sub{font-size:11px;font-weight:300;color:var(--gold);letter-spacing:2px;text-transform:uppercase}
+  .badge{display:flex;align-items:center;gap:8px;background:var(--border);border:1px solid var(--border-strong);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;color:var(--gold);letter-spacing:1px;text-transform:uppercase}
+  .badge::before{content:'';width:7px;height:7px;background:var(--gold);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  h1{font-family:'Playfair Display',serif;font-size:32px;font-weight:600;margin-bottom:6px}
+  .desc{font-size:14px;font-weight:300;color:var(--text-muted);margin-bottom:36px}
+  .card{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:32px;margin-bottom:32px;backdrop-filter:blur(10px)}
+  .card-title{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+  .row-busca{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:end}
+  .row-cliente{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .fg{display:flex;flex-direction:column;gap:8px}
+  .fl{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+  .fi{background:rgba(10,22,40,.8);border:1px solid var(--border);border-radius:4px;padding:12px 14px;font-family:'Jost',sans-serif;font-size:14px;color:var(--white);outline:none;transition:border-color .2s;width:100%}
+  .fi::placeholder{color:var(--text-muted)}.fi:focus{border-color:var(--gold)}
+  .fh{font-size:11px;color:var(--text-muted);margin-top:2px}
+  .btn{background:linear-gradient(135deg,var(--gold),var(--gold-dim));border:none;border-radius:4px;padding:12px 28px;font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);cursor:pointer;transition:all .2s;white-space:nowrap;height:46px}
+  .btn:hover{opacity:.9;transform:translateY(-1px)}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .status{display:none;align-items:center;gap:12px;padding:16px 20px;border-radius:6px;margin-bottom:24px;font-size:14px}
+  .status.loading{display:flex;background:rgba(201,168,76,.08);border:1px solid var(--border);color:var(--gold)}
+  .status.error{display:flex;background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.3);color:#e08585}
+  .spin{width:18px;height:18px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .lic-info{display:none;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:24px 28px;margin-bottom:28px}
+  .lic-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+  .lic-titulo{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;max-width:70%;line-height:1.4}
+  .lic-badge{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+  .b-ativa{background:rgba(76,175,122,.15);border:1px solid rgba(76,175,122,.4);color:var(--green)}
+  .b-enc{background:rgba(138,154,184,.15);border:1px solid rgba(138,154,184,.4);color:var(--text-muted)}
+  .meta{display:flex;flex-wrap:wrap;gap:24px}
+  .mi{display:flex;flex-direction:column;gap:3px}
+  .ml{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+  .mv{font-size:13px;font-weight:500}
+  .sec{display:none}
+  .sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+  .sec-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:600}
+  .sec-count{font-size:12px;font-weight:500;color:var(--text-muted);background:rgba(255,255,255,.06);padding:4px 12px;border-radius:12px}
+  .ic{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;overflow:hidden;transition:border-color .2s}
+  .ic:hover{border-color:var(--border-strong)}
+  .ich{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;cursor:pointer;user-select:none}
+  .ichl{display:flex;align-items:center;gap:16px;flex:1}
+  .inum{width:36px;height:36px;background:linear-gradient(135deg,var(--gold-dim),rgba(201,168,76,.4));border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold-light);flex-shrink:0}
+  .idesc{font-size:14px;line-height:1.4}.iqty{font-size:12px;color:var(--text-muted);margin-top:2px}
+  .ichr{display:flex;align-items:center;gap:16px;flex-shrink:0}
+  .isb{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:10px}
+  .s-and{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold)}
+  .s-hom{background:rgba(76,175,122,.1);border:1px solid rgba(76,175,122,.3);color:var(--green)}
+  .s-can{background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.3);color:var(--red)}
+  .s-des{background:rgba(138,154,184,.1);border:1px solid rgba(138,154,184,.3);color:var(--text-muted)}
+  .icp{font-size:12px;font-weight:600;color:var(--gold)}.icp.mt{color:var(--text-muted)}
+  .chev{color:var(--text-muted);font-size:16px;transition:transform .2s}
+  .ic.open .chev{transform:rotate(180deg)}
+  .ibody{display:none;padding:0 24px 24px}.ic.open .ibody{display:block}
+  .ibody hr{border:none;border-top:1px solid var(--border);margin-bottom:20px}
+  .alert{display:flex;align-items:center;gap:10px;background:rgba(224,184,76,.08);border:1px solid rgba(224,184,76,.3);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--yellow);margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+  td{padding:12px;border-bottom:1px solid rgba(201,168,76,.08);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr.cr{background:rgba(201,168,76,.07)}tr.cr td{color:var(--gold-light)}
+  .rb{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:700;font-family:'Playfair Display',serif}
+  .r1{background:linear-gradient(135deg,#c9a84c,#8a6a28);color:var(--navy)}
+  .r2{background:rgba(180,180,200,.2);border:1px solid rgba(180,180,200,.3);color:#c0c0d0}
+  .r3{background:rgba(160,100,60,.2);border:1px solid rgba(160,100,60,.3);color:#c08060}
+  .ro{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text-muted)}
+  .ctag{font-size:10px;font-weight:600;color:var(--gold);background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);padding:2px 7px;border-radius:10px;margin-left:6px}
+  .dtag{font-size:10px;font-weight:600;color:var(--red);background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.25);padding:2px 7px;border-radius:10px}
+  .vw{font-weight:600;font-variant-numeric:tabular-nums}.vg{color:var(--green)}
+  .fn{font-weight:500}.cnpj{font-size:11px;color:var(--text-muted);margin-top:1px}
+  .empty{text-align:center;padding:24px;color:var(--text-muted);font-size:13px;font-style:italic}
+  footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .fll{font-size:12px;color:var(--text-muted)}.fll strong{color:var(--gold)}
+  .frr{font-size:11px;color:rgba(138,154,184,.5);letter-spacing:1px;text-transform:uppercase}
+  @media(max-width:768px){.row-busca,.row-cliente{grid-template-columns:1fr}.lic-header{flex-direction:column;gap:12px}.lic-titulo{max-width:100%}.ichr{flex-direction:column;align-items:flex-end;gap:6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <div class="mono">CMR</div>
+      <div><div class="logo-title">Carvalho, Maia & Real</div><div class="logo-sub">Advogados</div></div>
+    </div>
+    <div class="badge">Portal PNCP · Consulta de Certames</div>
+  </header>
+  <h1>Análise Comparativa de Certame</h1>
+  <p class="desc">Consulte itens, lances e posição do cliente em qualquer certame do Compras.gov.br</p>
+  <div class="card">
+    <div class="card-title">Dados do Certame</div>
+    <div class="row-busca">
+      <div class="fg">
+        <label class="fl" for="nc">Número de Controle PNCP</label>
+        <input class="fi" id="nc" type="text" placeholder="Ex: 00394502000144-1-000821/2026">
+        <span class="fh">Cole o número exatamente como aparece no PNCP ou Compras.gov.br</span>
+      </div>
+      <button class="btn" id="btn" onclick="buscar()">Buscar</button>
+    </div>
+    <div class="row-cliente">
+      <div class="fg">
+        <label class="fl" for="cc">CNPJ do Cliente (opcional)</label>
+        <input class="fi" id="cc" type="text" placeholder="00.000.000/0000-00" maxlength="18">
+        <span class="fh">Para destacar a posição do cliente em cada item</span>
+      </div>
+      <div class="fg">
+        <label class="fl" for="nc2">Nome do Cliente (opcional)</label>
+        <input class="fi" id="nc2" type="text" placeholder="Ex: Empresa XYZ Ltda.">
+      </div>
+    </div>
+  </div>
+  <div class="status" id="st"><div class="spin" id="sp"></div><span id="sm"></span></div>
+  <div class="lic-info" id="li">
+    <div class="lic-header">
+      <div class="lic-titulo" id="lo">—</div>
+      <span class="lic-badge" id="lb">—</span>
+    </div>
+    <div class="meta">
+      <div class="mi"><span class="ml">Órgão</span><span class="mv" id="lorg">—</span></div>
+      <div class="mi"><span class="ml">Modalidade</span><span class="mv" id="lmod">—</span></div>
+      <div class="mi"><span class="ml">Nº Controle</span><span class="mv" id="lnum">—</span></div>
+      <div class="mi"><span class="ml">Valor Estimado</span><span class="mv" id="lval">—</span></div>
+      <div class="mi"><span class="ml">Publicação</span><span class="mv" id="ldat">—</span></div>
+    </div>
+  </div>
+  <div class="sec" id="sec">
+    <div class="sec-header">
+      <h2 class="sec-title">Itens do Certame</h2>
+      <span class="sec-count" id="cnt">0 itens</span>
+    </div>
+    <div id="items"></div>
+  </div>
+  <footer>
+    <div class="fll"><strong>CMR Advogados</strong> · Ferramenta interna de consulta</div>
+    <div class="frr">API Compras.gov.br · Gov.br</div>
+  </footer>
+</div>
+<script>
+  document.getElementById('cc').addEventListener('input',function(){
+    let v=this.value.replace(/\D/g,'').slice(0,14);
+    v=v.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3')
+       .replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
+    this.value=v;
+  });
+  function limpa(v){return(v||'').replace(/\D/g,'')}
+  function parseNC(s){
+    s=s.trim().replace(/\s/g,'');
+    const m=s.match(/^(\d{14})-\d+-0*(\d+)\/(\d{4})$/);
+    if(!m)return null;
+    return{cnpj:m[1],seq:parseInt(m[2],10),ano:m[3],orig:s};
+  }
+  function setSt(msg,t){
+    const b=document.getElementById('st');
+    b.className='status '+t;
+    document.getElementById('sp').style.display=t==='loading'?'block':'none';
+    document.getElementById('sm').textContent=msg;
+  }
+  function hideSt(){document.getElementById('st').className='status'}
+  function R$(v){return v==null?'—':'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function Rd(d){return d?new Date(d).toLocaleDateString('pt-BR'):'—'}
+  function Rcnpj(v){const d=(v||'').replace(/\D/g,'');return d.length===14?d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,'$1.$2.$3/$4-$5'):v||'—'}
+  function rk(p){return p===1?'r1':p===2?'r2':p===3?'r3':'ro'}
+  function sc(n){
+    if(!n)return 's-and'; n=n.toLowerCase();
+    if(n.includes('homolog'))return 's-hom';
+    if(n.includes('anulad')||n.includes('revogad')||n.includes('cancelad'))return 's-can';
+    if(n.includes('deserto')||n.includes('fracass'))return 's-des';
+    return 's-and';
+  }
+
+  // Proxy público para contornar CORS
+  async function api(path){
+    const target='https://dadosabertos.compras.gov.br'+path;
+    const url='https://api.allorigins.win/get?url='+encodeURIComponent(target);
+    const r=await fetch(url);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    if(!data.contents)throw new Error('Sem resposta do proxy');
+    return JSON.parse(data.contents);
+  }
+
+  async function buscar(){
+    const raw=document.getElementById('nc').value.trim();
+    if(!raw){setSt('Informe o número de controle PNCP.','error');return}
+    const p=parseNC(raw);
+    if(!p){setSt('Formato inválido. Use: 00000000000000-1-000042/2025','error');return}
+    const btn=document.getElementById('btn');
+    btn.disabled=true;
+    document.getElementById('li').style.display='none';
+    document.getElementById('sec').style.display='none';
+    document.getElementById('items').innerHTML='';
+    const cCnpj=limpa(document.getElementById('cc').value);
+    const cNome=document.getElementById('nc2').value.trim();
+    try{
+      setSt('Consultando contratação...','loading');
+      const enc=encodeURIComponent(p.orig);
+      const cd=await api(`/modulo-contratacao/5_consultarContratacao?numeroControlePNCP=${enc}&pagina=1`);
+      const compras=cd.resultado||[];
+      const compra=compras.find(c=>(c.numeroControlePNCP||'').replace(/\s/g,'')=== p.orig)||compras[0];
+      if(!compra)throw new Error('Contratação não encontrada. Verifique o número de controle.');
+      document.getElementById('lo').textContent=compra.objetoCompra||'—';
+      const sn=compra.situacaoCompraNome||'';
+      const lb=document.getElementById('lb');
+      lb.textContent=sn||'—';
+      lb.className='lic-badge '+(sn.toLowerCase().includes('divulgada')||sn.toLowerCase().includes('aberta')?'b-ativa':'b-enc');
+      document.getElementById('lorg').textContent=compra.orgaoEntidade?.razaoSocial||compra.unidadeOrgao?.nomeUnidade||'—';
+      document.getElementById('lmod').textContent=compra.modalidadeNome||'—';
+      document.getElementById('lnum').textContent=compra.numeroControlePNCP||p.orig;
+      document.getElementById('lval').textContent=R$(compra.valorTotalEstimado);
+      document.getElementById('ldat').textContent=Rd(compra.dataPublicacaoPncp);
+      document.getElementById('li').style.display='block';
+      setSt('Buscando itens...','loading');
+      const id=await api(`/modulo-contratacao/6_consultarItensContratacao?numeroControlePNCP=${enc}&pagina=1&tamanhoPagina=500`);
+      const itens=id.resultado||[];
+      document.getElementById('cnt').textContent=`${itens.length} item(ns)`;
+      document.getElementById('sec').style.display='block';
+      const container=document.getElementById('items');
+      container.innerHTML='';
+      itens.forEach((item,idx)=>{
+        const situ=item.situacaoCompraItemNome||'Em andamento';
+        const d=document.createElement('div');
+        d.className='ic';d.id='c'+idx;
+        d.innerHTML=`
+          <div class="ich" onclick="tog(${idx})">
+            <div class="ichl">
+              <div class="inum">${item.numeroItem}</div>
+              <div>
+                <div class="idesc">${item.descricao||item.descricaoItem||'Item '+item.numeroItem}</div>
+                <div class="iqty">Qtd: ${item.quantidade||'—'} ${item.unidadeMedida||''} · Est.: ${R$(item.valorUnitarioEstimado)}</div>
+              </div>
+            </div>
+            <div class="ichr">
+              <span class="isb ${sc(situ)}">${situ}</span>
+              <span class="icp mt" id="cp${idx}">⟳</span>
+              <span class="chev">▾</span>
+            </div>
+          </div>
+          <div class="ibody"><hr><div id="l${idx}" class="empty">Carregando...</div></div>`;
+        container.appendChild(d);
+      });
+      hideSt();
+      for(let i=0;i<itens.length;i+=4){
+        await Promise.all(itens.slice(i,i+4).map(async(item,off)=>{
+          const idx=i+off;
+          try{
+            const rd=await api(`/modulo-contratacao/7_consultarResultadoItemContratacao?numeroControlePNCP=${enc}&numeroItem=${item.numeroItem}&pagina=1&tamanhoPagina=500`);
+            renderR(idx,rd.resultado||[],cCnpj,cNome);
+          }catch(e){renderR(idx,[],cCnpj,cNome)}
+        }));
+      }
+    }catch(e){setSt('Erro: '+e.message,'error')}
+    finally{btn.disabled=false}
+  }
+
+  function renderR(idx,res,cCnpj,cNome){
+    const el=document.getElementById('l'+idx);
+    const cp=document.getElementById('cp'+idx);
+    const ativos=res.filter(r=>!(r.situacaoResultadoItemNome||'').toLowerCase().includes('cancelad'));
+    ativos.sort((a,b)=>(a.valorResultado||0)-(b.valorResultado||0));
+    let pos=null;
+    if(cCnpj)ativos.forEach((r,i)=>{if(limpa(r.niFornecedor||'')===cCnpj)pos=i+1});
+    if(cCnpj&&pos!==null){cp.className='icp';cp.textContent=`★ ${pos}º lugar`}
+    else if(cCnpj){cp.className='icp mt';cp.textContent='Não encontrado'}
+    else{cp.className='icp mt';cp.textContent=`${ativos.length} proponente(s)`}
+    if(!ativos.length){el.innerHTML='<div class="empty">Nenhum resultado disponível.</div>';return}
+    let alerta='';
+    if(pos&&pos>1)alerta=`<div class="alert">⚠️ Cliente em ${pos}º lugar — ${pos-1} proponente(s) à frente.</div>`;
+    const rows=ativos.map((r,i)=>{
+      const p2=i+1,isc=cCnpj&&limpa(r.niFornecedor||'')===cCnpj;
+      const isc2=(r.situacaoResultadoItemNome||'').toLowerCase().includes('cancelad');
+      const nome=isc&&cNome?cNome:(r.nomeRazaoSocialFornecedor||r.niFornecedor||'—');
+      return `<tr class="${isc?'cr':''}">
+        <td><span class="rb ${rk(p2)}">${p2}</span></td>
+        <td><div class="fn">${nome}${isc?'<span class="ctag">★ Nosso cliente</span>':''}</div><div class="cnpj">${Rcnpj(r.niFornecedor)}</div></td>
+        <td><span class="vw ${p2===1&&!isc2?'vg':''}">${R$(r.valorResultado)}</span></td>
+        <td>${r.marcaFabricante||'—'}</td>
+        <td>${isc2?'<span class="dtag">✕ Cancelado</span>':(p2===1?'<span style="color:var(--green);font-size:12px;font-weight:600">✓ Melhor lance</span>':'')}</td>
+      </tr>`;
+    }).join('');
+    el.innerHTML=`${alerta}<table><thead><tr><th>#</th><th>Fornecedor</th><th>Valor</th><th>Marca</th><th>Situação</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function tog(idx){document.getElementById('c'+idx).classList.toggle('open')}
+  document.addEventListener('keydown',e=>{if(e.key==='Enter')buscar()});
+</script>
+</body>
+</html>
