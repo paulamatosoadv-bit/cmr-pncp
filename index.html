@@ -182,15 +182,12 @@
     return 's-and';
   }
 
-  // Proxy público para contornar CORS
+  // Netlify Function como proxy (resolve CORS)
   async function api(path){
-    const target='https://dadosabertos.compras.gov.br'+path;
-    const url='https://api.allorigins.win/get?url='+encodeURIComponent(target);
-    const r=await fetch(url);
+    const url='/.netlify/functions/api?path='+path;
+    const r=await fetch(url,{headers:{Accept:'application/json'}});
     if(!r.ok)throw new Error('HTTP '+r.status);
-    const data=await r.json();
-    if(!data.contents)throw new Error('Sem resposta do proxy');
-    return JSON.parse(data.contents);
+    return r.json();
   }
 
   async function buscar(){
