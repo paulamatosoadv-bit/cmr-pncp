@@ -274,8 +274,8 @@
   function renderR(idx,res,cCnpj,cNome){
     const el=document.getElementById('l'+idx);
     const cp=document.getElementById('cp'+idx);
-    const ativos=res.filter(r=>!(r.situacaoResultadoItemNome||'').toLowerCase().includes('cancelad'));
-    ativos.sort((a,b)=>(a.valorResultado||0)-(b.valorResultado||0));
+    const ativos=res.filter(r=>!(r.situacaoCompraItemResultadoNome||r.situacaoResultadoItemNome||'').toLowerCase().includes('cancelad'));
+    ativos.sort((a,b)=>(a.ordemClassificacaoSrp||a.sequencialResultado||0)-(b.ordemClassificacaoSrp||b.sequencialResultado||0));
     let pos=null;
     if(cCnpj)ativos.forEach((r,i)=>{if(limpa(r.niFornecedor||'')===cCnpj)pos=i+1});
     if(cCnpj&&pos!==null){cp.className='icp';cp.textContent=`★ ${pos}º lugar`}
@@ -286,12 +286,12 @@
     if(pos&&pos>1)alerta=`<div class="alert">⚠️ Cliente em ${pos}º lugar — ${pos-1} proponente(s) à frente.</div>`;
     const rows=ativos.map((r,i)=>{
       const p2=i+1,isc=cCnpj&&limpa(r.niFornecedor||'')===cCnpj;
-      const isc2=(r.situacaoResultadoItemNome||'').toLowerCase().includes('cancelad');
+      const isc2=(r.situacaoCompraItemResultadoNome||r.situacaoResultadoItemNome||'').toLowerCase().includes('cancelad');
       const nome=isc&&cNome?cNome:(r.nomeRazaoSocialFornecedor||r.niFornecedor||'—');
       return `<tr class="${isc?'cr':''}">
         <td><span class="rb ${rk(p2)}">${p2}</span></td>
         <td><div class="fn">${nome}${isc?'<span class="ctag">★ Nosso cliente</span>':''}</div><div class="cnpj">${Rcnpj(r.niFornecedor)}</div></td>
-        <td><span class="vw ${p2===1&&!isc2?'vg':''}">${R$(r.valorResultado)}</span></td>
+        <td><span class="vw ${p2===1&&!isc2?'vg':''}">${R$(r.valorUnitarioHomologado!=null?r.valorUnitarioHomologado:r.valorResultado)}</span></td>
         <td>${r.marcaFabricante||'—'}</td>
         <td>${isc2?'<span class="dtag">✕ Cancelado</span>':(p2===1?'<span style="color:var(--green);font-size:12px;font-weight:600">✓ Melhor lance</span>':'')}</td>
       </tr>`;
