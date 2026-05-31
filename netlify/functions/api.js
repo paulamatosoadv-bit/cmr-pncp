@@ -1,6 +1,6 @@
 exports.handler = async function(event) {
   const path = event.queryStringParameters?.path || '';
-  const url = 'https://dadosabertos.compras.gov.br' + decodeURIComponent(path);
+  const url = 'https://dadosabertos.compras.gov.br' + path;
 
   try {
     const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
