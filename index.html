@@ -122,6 +122,13 @@
         <input class="fi" id="nc2" type="text" placeholder="Ex: Empresa XYZ Ltda.">
       </div>
     </div>
+    <div class="row-cliente" style="margin-top:12px">
+      <div class="fg">
+        <label class="fl" for="cod-cnet">Código Compras.gov.br (opcional)</label>
+        <input class="fi" id="cod-cnet" type="text" placeholder="Ex: 76240005900012026">
+        <span class="fh">Para buscar lances de itens em disputa — número após "compra=" na URL</span>
+      </div>
+    </div>
   </div>
   <div class="status" id="st"><div class="spin" id="sp"></div><span id="sm"></span></div>
   <div class="lic-info" id="li">
@@ -262,13 +269,59 @@
           try{
             const rd = await api('resultados', item.numeroItem);
             const res = Array.isArray(rd) ? rd : (rd.data||[]);
-            renderR(idx, res, cCnpj, cNome);
+            if(res.length === 0) {
+              // Item sem resultado homologado — tentar buscar lances em disputa via Comprasnet
+              const codigoCnet = document.getElementById('cod-cnet').value.trim();
+              if(codigoCnet) {
+                try {
+                  const ld = await api('lances', item.numeroItem, codigoCnet, true);
+                  const lances = Array.isArray(ld) ? ld : (ld.propostas||ld.lances||[]);
+                  renderLancesDisputa(idx, lances, cCnpj, cNome);
+                } catch(e2) { renderR(idx,[],cCnpj,cNome) }
+              } else {
+                renderR(idx,[],cCnpj,cNome);
+              }
+            } else {
+              renderR(idx, res, cCnpj, cNome);
+            }
           }catch(e){renderR(idx,[],cCnpj,cNome)}
         }));
       }
 
     }catch(e){setSt('Erro: '+e.message,'error')}
     finally{btn.disabled=false}
+  }
+
+
+  function renderLancesDisputa(idx, lances, cCnpj, cNome) {
+    const el = document.getElementById('l'+idx);
+    const cp = document.getElementById('cp'+idx);
+    if(!lances.length) {
+      el.innerHTML='<div class="empty">Item em disputa — nenhum lance registrado ainda.</div>';
+      cp.className='icp mt'; cp.textContent='Em disputa';
+      return;
+    }
+    // Ordenar por valor crescente
+    lances.sort((a,b) => (a.valorLance||a.valorProposta||0)-(b.valorLance||b.valorProposta||0));
+    let pos=null;
+    if(cCnpj) lances.forEach((r,i)=>{ if(limpa(r.cnpjFornecedor||r.cpfCnpj||'')===cCnpj) pos=i+1 });
+    if(cCnpj&&pos!==null){cp.className='icp';cp.textContent='★ '+pos+'º lugar'}
+    else if(cCnpj){cp.className='icp mt';cp.textContent='Não encontrado'}
+    else{cp.className='icp mt';cp.textContent=lances.length+' lance(s)'}
+    let alerta='';
+    if(pos&&pos>1) alerta='<div class="alert">⚠️ Cliente em '+pos+'º lugar — '+(pos-1)+' à frente.</div>';
+    const rows=lances.map((r,i)=>{
+      const p2=i+1;
+      const isc=cCnpj&&limpa(r.cnpjFornecedor||r.cpfCnpj||'')===cCnpj;
+      const valor=r.valorLance||r.valorProposta;
+      const nome=isc&&cNome?cNome:(r.nomeFornecedor||r.razaoSocial||r.cnpjFornecedor||'—');
+      return '<tr class="'+(isc?'cr':'')+'"><td><span class="rb '+rk(p2)+'">'+p2+'</span></td>'
+        +'<td><div class="fn">'+nome+(isc?'<span class="ctag">★ Nosso cliente</span>':'')+'</div>'
+        +'<div class="cnpj">'+Rcnpj(r.cnpjFornecedor||r.cpfCnpj||'')+'</div></td>'
+        +'<td><span class="vw '+(p2===1?'vg':'')+'">'+R$(valor)+'</span></td>'
+        +'<td>—</td><td><span style="color:var(--yellow);font-size:11px">⏳ Em disputa</span></td></tr>';
+    }).join('');
+    el.innerHTML=alerta+'<table><thead><tr><th>#</th><th>Fornecedor</th><th>Valor</th><th>Marca</th><th>Situação</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
 
   function renderR(idx,res,cCnpj,cNome){
@@ -302,5 +355,15 @@
   function tog(idx){document.getElementById('c'+idx).classList.toggle('open')}
   document.addEventListener('keydown',e=>{if(e.key==='Enter')buscar()});
 </script>
+
+<!-- Modal Captcha -->
+<div id="captcha-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;flex-direction:column;gap:20px">
+  <div style="background:#122040;border:1px solid #c9a84c;border-radius:8px;padding:32px;text-align:center;max-width:400px">
+    <div style="font-family:'Playfair Display',serif;font-size:20px;color:#f5f2eb;margin-bottom:8px">Verificação de Segurança</div>
+    <div style="font-size:13px;color:#8a9ab8;margin-bottom:24px">Resolva o captcha para buscar lances de itens em disputa</div>
+    <div id="captcha-widget" style="display:inline-block"></div>
+  </div>
+</div>
+
 </body>
 </html>
