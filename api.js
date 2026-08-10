@@ -10,7 +10,7 @@ exports.handler = async function(event, context) {
   const captchaToken = qs.captchaToken || '';
   const codigoCompra = qs.codigoCompra || '';
 
-  const PNCP_V1   = 'https://pncp.gov.br/api/pncp/v1';
+  const PNCP_V1 = 'https://pncp.gov.br/api/pncp/v1';
   const CNET_BASE = 'https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-fase-externa/public/v1';
 
   let url;
@@ -22,6 +22,9 @@ exports.handler = async function(event, context) {
     url = `${PNCP_V1}/orgaos/${cnpj}/compras/${ano}/${seq}/itens?pagina=1&tamanhoPagina=500`;
   } else if (endpoint === 'resultados') {
     url = `${PNCP_V1}/orgaos/${cnpj}/compras/${ano}/${seq}/itens/${numeroItem}/resultados?pagina=1&tamanhoPagina=500`;
+  } else if (endpoint === 'propostas') {
+    // Todos os participantes com suas propostas
+    url = `${PNCP_V1}/orgaos/${cnpj}/compras/${ano}/${seq}/itens/${numeroItem}/propostas?pagina=1&tamanhoPagina=500`;
   } else if (endpoint === 'lances') {
     if (!captchaToken) return {
       statusCode: 400,
