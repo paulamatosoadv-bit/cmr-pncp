@@ -1,4 +1,5 @@
-// v2 exports.handler = async function(event) {
+// v2 
+exports.handler = async function(event) {
   const qs = event.queryStringParameters || {};
   const cnpj = qs.cnpj || '';
   const ano = qs.ano || '';
